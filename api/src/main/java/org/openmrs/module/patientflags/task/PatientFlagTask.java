@@ -16,6 +16,7 @@ package org.openmrs.module.patientflags.task;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
 import org.openmrs.CohortMembership;
@@ -57,8 +58,8 @@ public class PatientFlagTask implements Runnable {
 		}
 	}
 	
-	public static Runnable evaluateAllFlags() {
-		return Daemon.runInDaemonThread(new AllFlagsEvaluator(), daemonToken);
+	public static Future<?> evaluateAllFlags() {
+		return Daemon.runInDaemonThreadWithoutResult(new AllFlagsEvaluator(), daemonToken);
 	}
 
 	public static void setDaemonToken(DaemonToken token) {
@@ -69,7 +70,7 @@ public class PatientFlagTask implements Runnable {
 		this.patient = patient;
 		
 		if (daemonToken != null) {
-			Daemon.runInDaemonThread(this, daemonToken);
+			Daemon.runInDaemonThreadWithoutResult(this, daemonToken);
 		}
 	}
 	
@@ -77,7 +78,7 @@ public class PatientFlagTask implements Runnable {
 		this.flag = flag;
 		
 		if (daemonToken != null) {
-			Daemon.runInDaemonThread(this, daemonToken);
+			Daemon.runInDaemonThreadWithoutResult(this, daemonToken);
 		}
 	}
 
@@ -146,7 +147,7 @@ public class PatientFlagTask implements Runnable {
 		public void run() {
 			FlagService flagService = Context.getService(FlagService.class);
 
-			flagService.getAllFlags().forEach(flag -> Daemon.runInNewDaemonThread(new PatientFlagGenerator(flag)));
+			flagService.getAllFlags().forEach(flag -> Daemon.runNewDaemonTask(new PatientFlagGenerator(flag)));
 		}
 	}
 

@@ -4,14 +4,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
 import org.openmrs.Patient;
 import org.openmrs.api.APIException;
@@ -24,7 +25,7 @@ import org.openmrs.module.patientflags.Priority;
 import org.openmrs.module.patientflags.Tag;
 import org.openmrs.module.patientflags.api.FlagService;
 import org.openmrs.module.patientflags.filter.Filter;
-import org.openmrs.test.BaseModuleContextSensitiveTest;
+import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
 
 
 /**
@@ -42,7 +43,7 @@ public class FlagServiceTest extends BaseModuleContextSensitiveTest {
 	 * Tests of the Flags
 	 */
 
-	@Before
+	@BeforeEach
 	public void initTestData() throws Exception {
 		initializeInMemoryDatabase();
 		executeDataSet(TEST_DATASET_FILE);
@@ -157,13 +158,15 @@ public class FlagServiceTest extends BaseModuleContextSensitiveTest {
 		assertNull(priority);
 	}
 
-	@Test(expected = APIException.class)
+	@Test
 	public void purgePriority_shouldTrowExceptionWhenPriorityAssociatedWithAFlag() {
 		Integer priorityId = 1;
 
-		flagService.purgePriority(priorityId);
-		Priority purgedPriority = flagService.getPriority(priorityId);
-		assertNotNull(purgedPriority);
+		assertThrows(APIException.class, () -> {
+			flagService.purgePriority(priorityId);
+			Priority purgedPriority = flagService.getPriority(priorityId);
+			assertNotNull(purgedPriority);
+		});
 	}
 
 	@Test
@@ -176,13 +179,15 @@ public class FlagServiceTest extends BaseModuleContextSensitiveTest {
 		assertEquals(reason, retiredpriority.getRetireReason());
 	}
 
-	@Test(expected = APIException.class)
+	@Test
 	public void retirePriority_shouldNotRetirePriorityWithoutReason() {
 		String reason = "";
 		Priority priority = flagService.getPriority(2);
-		flagService.retirePriority(priority, reason);
-		Priority retiredpriority = flagService.getPriority(2);
-		assertFalse(retiredpriority.getRetired());
+		assertThrows(APIException.class, () -> {
+			flagService.retirePriority(priority, reason);
+			Priority retiredpriority = flagService.getPriority(2);
+			assertFalse(retiredpriority.getRetired());
+		});
 	}
 
 	/**
