@@ -588,6 +588,7 @@ public class FlagServiceImpl extends BaseOpenmrsService implements FlagService {
 			Context.addProxyPrivilege("Get Users");
 			Context.addProxyPrivilege("View Users");
 			Context.addProxyPrivilege("Get Global Properties");
+			Context.addProxyPrivilege("Manage Privileges");
 			String username = Context.getAdministrationService().getGlobalProperty("patientflags.username");
 			User user = Context.getUserService().getUserByUsername(username);
 		
@@ -608,6 +609,7 @@ public class FlagServiceImpl extends BaseOpenmrsService implements FlagService {
 			Context.removeProxyPrivilege("Get Users");
 			Context.removeProxyPrivilege("View Users");
 			Context.removeProxyPrivilege("Get Global Properties");
+			Context.removeProxyPrivilege("Manage Privileges");
 		}
 			
 		// set the initialized flag to true
