@@ -1,5 +1,6 @@
 package org.openmrs.module.patientflags.api.impl;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -263,6 +264,14 @@ public class FlagServiceTest extends BaseModuleContextSensitiveTest {
 		Flag flag = flagService.getFlagByUuid(uuid);
 		assertNotNull(flag);
 		assertEquals(uuid, flag.getUuid());
+	}
+
+	@Test
+	public void searchFlags_shouldFilterByTagName() {
+		List<Flag> flags = flagService.searchFlags(null, null, null, Collections.singletonList("high"));
+		assertEquals(1, flags.size());
+		assertEquals(Integer.valueOf(1), flags.get(0).getFlagId());
+		assertTrue(flagService.searchFlags(null, null, null, Collections.singletonList("low")).isEmpty());
 	}
 
 	/**
