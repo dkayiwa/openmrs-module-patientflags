@@ -73,14 +73,14 @@ public class HibernateFlagDAO implements FlagDAO {
 	 * @see org.openmrs.module.patientflags.db.FlagDAO#getFlagByUuid(String)
 	 */
 	public Flag getFlagByUuid(String uuid) throws DAOException {
-		return (Flag)this.sessionFactory.getCurrentSession().createQuery("from Flag f where f.uuid = :uuid").setParameter("uuid", uuid).getResultStream().findFirst().orElse(null);
+		return (Flag)this.sessionFactory.getCurrentSession().createQuery("from Flag f where f.uuid = :uuid").setParameter("uuid", uuid).getSingleResultOrNull();
 	}
 	
 	/**
 	 * @see org.openmrs.module.patientflags.db.FlagDAO#getPatientFlagByUuid(String)
 	 */
 	public PatientFlag getPatientFlagByUuid(String uuid) throws DAOException {
-		return (PatientFlag)this.sessionFactory.getCurrentSession().createQuery("from PatientFlag f where f.uuid = :uuid").setParameter("uuid", uuid).getResultStream().findFirst().orElse(null);
+		return (PatientFlag)this.sessionFactory.getCurrentSession().createQuery("from PatientFlag f where f.uuid = :uuid").setParameter("uuid", uuid).getSingleResultOrNull();
 	}
 
 	/**
@@ -213,7 +213,7 @@ public class HibernateFlagDAO implements FlagDAO {
 	 * @see org.openmrs.module.patientflags.db.FlagDAO#getTagByUuid(String)
 	 */
 	public Tag getTagByUuid(String uuid) throws DAOException {
-		return (Tag)this.sessionFactory.getCurrentSession().createQuery("from Tag t where t.uuid = :uuid").setParameter("uuid", uuid).getResultStream().findFirst().orElse(null);
+		return (Tag)this.sessionFactory.getCurrentSession().createQuery("from Tag t where t.uuid = :uuid").setParameter("uuid", uuid).getSingleResultOrNull();
 	}
 
 	/**
@@ -267,7 +267,7 @@ public class HibernateFlagDAO implements FlagDAO {
 	 * @see org.openmrs.module.patientflags.db.FlagDAO#getPriorityByUuid(String)
 	 */
 	public Priority getPriorityByUuid(String uuid) throws DAOException {
-		return (Priority) this.sessionFactory.getCurrentSession().createQuery("from Priority p where p.uuid = :uuid").setParameter("uuid", uuid).getResultStream().findFirst().orElse(null);
+		return (Priority) this.sessionFactory.getCurrentSession().createQuery("from Priority p where p.uuid = :uuid").setParameter("uuid", uuid).getSingleResultOrNull();
 	}
 
 	/**

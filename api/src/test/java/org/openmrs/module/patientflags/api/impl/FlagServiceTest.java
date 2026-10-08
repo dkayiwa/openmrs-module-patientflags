@@ -15,18 +15,23 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.openmrs.Cohort;
+import org.openmrs.GlobalProperty;
 import org.openmrs.Patient;
+import org.openmrs.Privilege;
 import org.openmrs.api.APIException;
 import org.openmrs.api.PatientService;
 import org.openmrs.api.context.Context;
+import org.openmrs.api.db.hibernate.DbSessionFactory;
 
 import org.openmrs.module.patientflags.Flag;
 import org.openmrs.module.patientflags.PatientFlag;
 import org.openmrs.module.patientflags.Priority;
 import org.openmrs.module.patientflags.Tag;
 import org.openmrs.module.patientflags.api.FlagService;
+import org.openmrs.module.patientflags.db.hibernate.HibernateFlagDAO;
 import org.openmrs.module.patientflags.filter.Filter;
 import org.openmrs.test.jupiter.BaseModuleContextSensitiveTest;
+import org.springframework.beans.factory.annotation.Autowired;
 
 
 /**
@@ -39,6 +44,9 @@ public class FlagServiceTest extends BaseModuleContextSensitiveTest {
 	private static final String TEST_DATASET_FILE = XML_DATASET_PATH + "patientflagtest-dataset.xml";
 
 	private FlagService flagService;
+
+	@Autowired
+	private DbSessionFactory dbSessionFactory;
 
 	/**
 	 * Tests of the Flags
@@ -272,6 +280,22 @@ public class FlagServiceTest extends BaseModuleContextSensitiveTest {
 		assertEquals(1, flags.size());
 		assertEquals(Integer.valueOf(1), flags.get(0).getFlagId());
 		assertTrue(flagService.searchFlags(null, null, null, Collections.singletonList("low")).isEmpty());
+	}
+
+	@Test
+	public void getPrivileges_shouldLoadAllPrivilegesForASuperUserWithoutAnAuthenticatedUser() {
+		Context.getAdministrationService().saveGlobalProperty(new GlobalProperty("patientflags.username", "admin"));
+		// the test database has no privileges, so add one for the cache to pick up
+		Context.getUserService().savePrivilege(new Privilege("Patient Flags Test Privilege", "for the cache test"));
+		int expected = Context.getUserService().getAllPrivileges().size();
+
+		HibernateFlagDAO dao = new HibernateFlagDAO();
+		dao.setSessionFactory(dbSessionFactory);
+		FlagServiceImpl service = new FlagServiceImpl();
+		service.setFlagDAO(dao);
+		Context.logout();
+
+		assertEquals(expected, service.getPrivileges().size());
 	}
 
 	/**
